@@ -1,0 +1,54 @@
+{% extends "admin/change_list.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+    <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const fetchUrls = document.getElementById('fetch_urls');
+            const soundcloudUserId = document.getElementsByName('soundcloud_user_id')[0];
+
+            fetchUrls.classList.add('disabled');
+            soundcloudUserId.addEventListener('change', () => {
+                if (soundcloudUserId.value) {
+                    fetchUrls.setAttribute('onclick', "event.preventDefault(); document.getElementById('fetch-urls-form').submit();");
+                    fetchUrls.classList.remove('disabled');
+                } else {
+                    fetchUrls.classList.add('disabled');
+                    fetchUrls.removeAttribute('href');
+                    fetchUrls.removeAttribute('onclick');
+                }
+            });
+        });
+    </script>
+    <style>
+        .disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+    </style>
+{% endblock %}
+
+{% block object-tools-items %}
+{{ block.super }}
+    <li>
+        <form id="fetch-urls-form" action="{% url 'admin:fetch_urls' %}" method="post">
+            {% csrf_token %}
+            <select name="soundcloud_user_id">
+                <option value="">Select SoundCloud User</option>
+                <option value="1080275071">TheLofiWifiStation</option>
+                {% for url in soundcloud_urls %}
+                    <option value="{{ url }}">{{ url }}</option>
+                {% endfor %}
+            </select>
+            <a href="#" class="btn btn-high btn-success disabled" id="fetch_urls">Fetch Urls</a>
+        </form>
+    </li>
+{% endblock %}
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}

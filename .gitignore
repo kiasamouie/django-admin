@@ -1,0 +1,3 @@
+env/
+django-api/.env
+react-ui/.env
